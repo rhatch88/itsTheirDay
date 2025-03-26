@@ -1,0 +1,160 @@
+﻿@page "/"
+@using TDBA.Data
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
+@inject IDbContextFactory<AppDbContext> DbFactory
+@rendermode InteractiveServer
+
+
+<h1>Welcome to TheirDay</h1>
+<h3>A great place to store kids favorite places</h3>
+
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <p style="color: green; font-weight: bold;">@Message</p>
+}
+
+<br />
+
+<EditForm Model="@NewEvent" OnValidSubmit="HandleValidSubmit" FormName="EventForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Event Name:</label>
+        <InputText id="Name" @bind-Value="NewEvent.Name" class="form-control" />
+        <ValidationMessage For="@(() => NewEvent.Name)" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Age Group:</label>
+        <InputSelect id="AgeGroup" @bind-Value="NewEvent.AgeGroup" class="form-select">
+            <option value="">-- Select Age Group --</option>
+            <option value="">All Ages</option>
+            <option value="1-3">1-3</option>
+            <option value="4-6">4-6</option>
+            <option value="7-9">7-9</option>
+            <option value="10-12">10-12</option>
+            <option value="13+">13+</option>
+        </InputSelect>
+        <ValidationMessage For="@(() => NewEvent.AgeGroup)" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Price Range:</label>
+        <InputSelect id="PriceRange" @bind-Value="NewEvent.PriceRange" class="form-select">
+            <option value="">-- Select Price Range --</option>
+            <option value="0">$0</option>
+            <option value="$">$</option>
+            <option value="$$">$$</option>
+            <option value="$$$">$$$</option>
+            <option value="$$$$">$$$$</option>
+        </InputSelect>
+        <ValidationMessage For="@(() => NewEvent.PriceRange)" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Indoor?</label>
+        <InputCheckbox id="Indoor" @bind-Value="NewEvent.IsIndoor" />
+    </div>
+
+    <br />
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+<hr />
+
+<h3>Saved Events</h3>
+
+@if (Events is not null && Events.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Age Group</th>
+                <th>Price</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var e in Events)
+            {
+                <tr>
+                    <td>@e.Name</td>
+                    <td>@e.AgeGroup</td>
+                    <td>@e.PriceRange</td>
+                    <td>@(e.IsIndoor ? "Indoor" : "Outdoor")</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteEvent(e.Id)">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No events have been added yet.</p>
+}
+
+@code {
+    private EventModel NewEvent = new();
+    private List<EventModel> Events = new();
+    private string Message = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            using var context = DbFactory.CreateDbContext();
+            context.Events.Add(NewEvent);
+            await context.SaveChangesAsync();
+
+            Message = "Thank you for adding an event!";
+            NewEvent = new(); // Reset form
+            await LoadEvents();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Message = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task LoadEvents()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Events = await context.Events.ToListAsync();
+    }
+
+    private async Task DeleteEvent(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        var eventToDelete = await context.Events.FindAsync(id);
+
+        if (eventToDelete != null)
+        {
+            context.Events.Remove(eventToDelete);
+            await context.SaveChangesAsync();
+            Message = "Event deleted.";
+            await LoadEvents();
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEvents();
+    }
+    }

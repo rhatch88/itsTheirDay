@@ -1,0 +1,28 @@
+﻿@page "/weather"
+@using TDBA.Services
+@using TDBA.Data
+@inject WeatherService WeatherService
+
+<h3>Louisville Weather</h3>
+
+@if (weatherData != null)
+{
+    <p>City: @weatherData.Name</p>
+    <p>Temperature: @weatherData.Main?.Temp°F</p>
+    <p>Pressure: @weatherData.Main?.Pressure hPa</p>
+    <p>Humidity: @weatherData.Main?.Humidity%</p>
+    <p>Wind Speed: @weatherData.Wind?.Speed mph</p>
+}
+else
+{
+    <p>Loading weather...</p>
+}
+
+@code {
+    private WeatherData? weatherData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        weatherData = await WeatherService.GetCurrentWeather();
+    }
+}
