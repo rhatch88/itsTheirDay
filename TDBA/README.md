@@ -1,0 +1,5 @@
+Welcome to Their Day, the app that helps you plan activities for kids based on age, budget, indoor/outdoor vibes, and even the current weather, because we all know children are adorable whirlwinds of chaos and indecision. Whether you're a parent, babysitter, teacher, cool aunt, or a very tired grown-up just trying to avoid another day of "I'm bored," this app is your new best friend. You can add fun events (like "Glowstick Dance Party" or "Build a Blanket Castle") and see them saved into a real database. Plus, thanks to the magical powers of the OpenWeather API, the app even shows you what the sky is up to so you can plan accordingly (looking at you, sudden thunderstorms).
+
+To run my program, you're going to need .NET 8, SQL server (LocalDB), and the contents of my .env file. To get it running you'll need to git clone, create a .env file and paste my secret message, verify appsettings.json connection string, then run dotnet ef database update.
+
+If you have any questions dont hesitate to reach out. Thanks for visiting!
