@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TDBA.Data;
 
 namespace TDBA.Services
@@ -22,7 +19,6 @@ namespace TDBA.Services
                 .ToListAsync();
         }
 
-
         public async Task AddEvent(EventModel newEvent)
         {
             Console.WriteLine($"Adding event: {newEvent.Name}, Age Group: {newEvent.AgeGroup}, Price: {newEvent.PriceRange}, Indoor: {newEvent.IsIndoor}");
@@ -31,6 +27,18 @@ namespace TDBA.Services
             await _context.SaveChangesAsync();
 
             Console.WriteLine("Event saved to database.");
+        }
+
+        public List<EventModel> GetWeatherSmartEvents(string weatherCondition, double temperatureF)
+        {
+            if (weatherCondition == "Rain" || weatherCondition == "Snow" || temperatureF < 50) //tested with 70
+            {
+                // Only show indoor events if nasty out
+                return _context.Events.Where(e => e.IsIndoor).ToList();
+            }
+
+            // Otherwise, show all events
+            return _context.Events.ToList();
         }
     }
 }

@@ -2,6 +2,7 @@
 @using TDBA.Services
 @using TDBA.Data
 @inject WeatherService WeatherService
+@inject EventService EventService   
 
 <h3>Louisville Weather</h3>
 
@@ -12,6 +13,16 @@
     <p>Pressure: @weatherData.Main?.Pressure hPa</p>
     <p>Humidity: @weatherData.Main?.Humidity%</p>
     <p>Wind Speed: @weatherData.Wind?.Speed mph</p>
+    <p><strong>Condition:</strong> @weatherCondition</p>
+
+    @if (weatherCondition == "Rain" || weatherCondition == "Snow")
+    {
+        <p style="color:blue;"><em>It looks wet outside! Check out some indoor events today. ☔</em></p>
+    }
+    else if (weatherCondition == "Clear")
+    {
+        <p style="color:green;"><em>Beautiful weather — great day for outdoor fun! 🌞</em></p>
+    }
 }
 else
 {
@@ -20,9 +31,21 @@ else
 
 @code {
     private WeatherData? weatherData;
+    private string weatherCondition = "Unknown";
+    private double temperatureF;
+    private List<EventModel> filteredEvents = new();
 
     protected override async Task OnInitializedAsync()
     {
         weatherData = await WeatherService.GetCurrentWeather();
+
+        if (weatherData != null)
+        {
+            weatherCondition = weatherData.Weather?[0].Main ?? "Unknown";
+            temperatureF = weatherData.Main?.Temp ?? 0;
+
+            // Filter events based on current weather
+            filteredEvents = EventService.GetWeatherSmartEvents(weatherCondition, temperatureF);
+        }
     }
 }

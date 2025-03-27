@@ -47,12 +47,13 @@ public class WeatherService
     }
 }
 
-// Add the WeatherData class
+// Added the WeatherData class
 public class WeatherData
 {
     public Main? Main { get; set; }
     public Wind? Wind { get; set; }
-    public string? Name { get; set; } // Make Name nullable
+    public string? Name { get; set; } 
+    public List<WeatherCondition> Weather { get; set; }
 }
 
 public class Main
@@ -66,4 +67,10 @@ public class Wind
 {
     public double Speed { get; set; }
     public double Deg { get; set; }
+}
+public class WeatherCondition
+{
+    public string Main { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string Icon { get; set; } = "";
 }

@@ -1,7 +1,10 @@
 ﻿@page "/counter"
 @using TDBA.Data
+@using TDBA.Services
 @rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
+@inject WeatherService WeatherService
+@inject EventService EventService
 
 <PageTitle>Event Suggestions</PageTitle>
 
@@ -13,37 +16,55 @@
     <p><strong>Type:</strong> @(RandomEvent.IsIndoor ? "Indoor" : "Outdoor")</p>
 }
 else
-{ 
-    <p>No events available.</p>
+{
+    <p>No events available based on the current weather.</p>
 }
 
 <button @onclick="GetRandomEvent">Fun Suggestions</button>
 
 @code {
-    private List<EventModel> Events = new();
+    private List<EventModel> FilteredEvents = new();
     private EventModel? RandomEvent;
-    private Random random = new Random();
+    private Random random = new();
 
-    [Inject]
-    protected AppDbContext DbContext { get; set; } = default!;
+    private WeatherData? weatherData;
+    private string weatherCondition = "Unknown";
+    private double temperatureF;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadEvents();
-        GetRandomEvent();
-    }
+        // Get weather
+        weatherData = await WeatherService.GetCurrentWeather();
 
-    private async Task LoadEvents()
-    {
-        Events = await DbContext.Events.ToListAsync();
+        if (weatherData != null)
+        {
+            weatherCondition = weatherData.Weather?[0].Main ?? "Unknown";
+            temperatureF = weatherData.Main?.Temp ?? 0;
+        }
+
+        // Get all events
+        var allEvents = await EventService.GetAllEventsAsync();
+
+        // Filter based on weather
+        if (weatherCondition == "Rain" || weatherCondition == "Snow" || temperatureF < 50)
+        {
+            FilteredEvents = allEvents.Where(e => e.IsIndoor).ToList();
+        }
+        else
+        {
+            FilteredEvents = allEvents;
+        }
+
+        // Pick one at startup
+        GetRandomEvent();
     }
 
     private void GetRandomEvent()
     {
-        if (Events.Any())
+        if (FilteredEvents.Any())
         {
-            int index = random.Next(Events.Count);
-            RandomEvent = Events[index];
+            int index = random.Next(FilteredEvents.Count);
+            RandomEvent = FilteredEvents[index];
         }
     }
 }
