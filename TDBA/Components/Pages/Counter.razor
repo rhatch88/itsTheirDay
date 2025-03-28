@@ -33,7 +33,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // Get weather
+        // Gets weather
         weatherData = await WeatherService.GetCurrentWeather();
 
         if (weatherData != null)
@@ -42,10 +42,10 @@ else
             temperatureF = weatherData.Main?.Temp ?? 0;
         }
 
-        // Get all events
+        // Gets all events
         var allEvents = await EventService.GetAllEventsAsync();
 
-        // Filter based on weather
+        // Filter for weather. tested accuacy by changing the min degree to 80, which worked so I changed it to 50 degrees or less
         if (weatherCondition == "Rain" || weatherCondition == "Snow" || temperatureF < 50)
         {
             FilteredEvents = allEvents.Where(e => e.IsIndoor).ToList();
