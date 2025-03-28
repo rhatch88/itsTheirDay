@@ -6,8 +6,13 @@ using TDBA.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));//<-database connection in appsettings.json
+//my SQLite connection. 
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//MY ORIGIONAL SQL SERVER CONNECTION
+//builder.Services.AddDbContextFactory<AppDbContext>(options =>
+//options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));//<-database connection in appsettings.json
 builder.Services.AddScoped<EventService>();
 builder.Services.AddHttpClient<WeatherService>(); //<-weather api service:)
 

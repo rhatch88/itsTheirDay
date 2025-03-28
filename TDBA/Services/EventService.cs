@@ -3,10 +3,12 @@ using TDBA.Data;
 
 namespace TDBA.Services
 {
+    // This class is responsible for handling all event-related operations. does not deal with UI, weather, or external API
     public class EventService
     {
         private readonly AppDbContext _context;
 
+        //relying on AppDbContext to handle database operations via Dependency Injection
         public EventService(AppDbContext context)
         {
             _context = context;
@@ -19,7 +21,7 @@ namespace TDBA.Services
                 .ToListAsync();
         }
 
-        public async Task AddEvent(EventModel newEvent)
+        public async Task AddEvent(EventModel newEvent) //using async with await to handle DB operations while keeping the UI responsive
         {
             Console.WriteLine($"Adding event: {newEvent.Name}, Age Group: {newEvent.AgeGroup}, Price: {newEvent.PriceRange}, Indoor: {newEvent.IsIndoor}");
 

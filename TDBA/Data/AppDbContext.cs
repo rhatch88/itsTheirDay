@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+
 namespace TDBA.Data
 {
     public class AppDbContext : DbContext

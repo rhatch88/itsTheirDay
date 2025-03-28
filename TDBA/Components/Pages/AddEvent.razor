@@ -2,8 +2,10 @@
 @using TDBA.Data
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
-@inject IDbContextFactory<AppDbContext> DbFactory
 @rendermode InteractiveServer
+@inject TDBA.Data.AppDbContext DbContext
+
+@*@inject IDbContextFactory<AppDbContext> DbFactory TS*@
 
 
 <h1>Welcome to TheirDay</h1>
@@ -110,16 +112,15 @@ else
 
 @code {
     private EventModel NewEvent = new();
-    private List<EventModel> Events = new(); // List of events
+    private List<EventModel> Events = new();
     private string Message = string.Empty;
 
     private async Task HandleValidSubmit()
     {
         try
         {
-            using var context = DbFactory.CreateDbContext();
-            context.Events.Add(NewEvent);
-            await context.SaveChangesAsync();
+            DbContext.Events.Add(NewEvent);
+            await DbContext.SaveChangesAsync();
 
             Message = "Thank you for adding an event!";
             NewEvent = new(); // Reset form
@@ -134,19 +135,17 @@ else
 
     private async Task LoadEvents()
     {
-        using var context = DbFactory.CreateDbContext();
-        Events = await context.Events.ToListAsync();
+        Events = await DbContext.Events.ToListAsync();
     }
 
     private async Task DeleteEvent(int id)
     {
-        using var context = DbFactory.CreateDbContext();
-        var eventToDelete = await context.Events.FindAsync(id);
+        var eventToDelete = await DbContext.Events.FindAsync(id);
 
         if (eventToDelete != null)
         {
-            context.Events.Remove(eventToDelete);
-            await context.SaveChangesAsync();
+            DbContext.Events.Remove(eventToDelete);
+            await DbContext.SaveChangesAsync();
             Message = "Event deleted.";
             await LoadEvents();
             StateHasChanged();
@@ -157,4 +156,4 @@ else
     {
         await LoadEvents();
     }
-    }
+}

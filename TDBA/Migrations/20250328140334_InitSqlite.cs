@@ -5,7 +5,7 @@
 namespace TDBA.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitSqlite : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,12 +14,12 @@ namespace TDBA.Migrations
                 name: "Events",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EventName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AgeGroup = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PriceRange = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsIndoor = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    AgeGroup = table.Column<string>(type: "TEXT", nullable: false),
+                    PriceRange = table.Column<string>(type: "TEXT", nullable: false),
+                    IsIndoor = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -52,8 +52,8 @@ public class WeatherData
 {
     public Main? Main { get; set; }
     public Wind? Wind { get; set; }
-    public string? Name { get; set; } 
-    public List<WeatherCondition> Weather { get; set; }
+    public string? Name { get; set; }
+    public List<WeatherCondition> Weather { get; set; } = new();
 }
 
 public class Main

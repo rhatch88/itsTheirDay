@@ -8,7 +8,7 @@ namespace TDBA.Data
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Please enter a name.")]
-        [RegularExpression("^[A-Za-z0-9\\s]+$", ErrorMessage = "Only letters, numbers, and spaces allowed.")] //<-- REGEX
+        [RegularExpression("^[A-Za-z0-9\\s]+$", ErrorMessage = "Only letters, numbers, and spaces allowed.")] //<-- REGEX feature
 
         public string Name { get; set; } = string.Empty;
 
